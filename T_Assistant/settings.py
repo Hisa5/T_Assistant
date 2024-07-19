@@ -167,7 +167,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'terrageneassistant@gmail.com'
 EMAIL_HOST_PASSWORD = 'evqb gbbc eqpm ozeh'
-
+DEFAULT_FROM_EMAIL = 'terrageneassistant@gmail.com'
 # settings.py
 FRONTEND_URL = 'http://localhost:3000'  # Cambia esto a la URL de tu frontend
 LOGGING = {
