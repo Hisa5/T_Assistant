@@ -1,6 +1,12 @@
 from rest_framework import serializers
 from .models import CustomUser
 
+class EmailVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    class Meta:
+        fields = ['email']
+        
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
     password2 = serializers.CharField(write_only=True, required=True)

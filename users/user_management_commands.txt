@@ -1,0 +1,33 @@
+# Django User Management Commands
+
+## Ver todos los usuarios
+python manage.py shell
+
+# En el shell de Django, ejecuta:
+from users.models import CustomUser
+
+#borrar todos los usuarios
+CustomUser.objects.all().delete()
+
+# Mostrar todos los usuarios
+CustomUser.objects.all()
+
+## Ver usuarios duplicados por email_verification_token
+from django.db.models import Count
+duplicates = CustomUser.objects.values('email_verification_token').annotate(count=Count('id')).filter(count__gt=1)
+print(list(duplicates))
+
+## Borrar un usuario específico
+python manage.py shell
+
+# En el shell de Django, ejecuta:
+from users.models import CustomUser
+user = CustomUser.objects.get(username='nombre_de_usuario')  # Reemplaza 'nombre_de_usuario' con el nombre de usuario real
+user.delete()
+
+## Borrar todos los usuarios
+python manage.py shell
+
+# En el shell de Django, ejecuta:
+from users.models import CustomUser
+CustomUser.objects.all().delete()
