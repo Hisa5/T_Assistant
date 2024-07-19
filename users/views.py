@@ -1,36 +1,46 @@
 from rest_framework import generics, status, views, permissions
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
-from .models import CustomUser as User
-from rest_framework.authtoken.models import Token
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import CustomUser
 from .serializers import UserSerializer
 from django_rest_passwordreset.views import ResetPasswordRequestToken
+from rest_framework.exceptions import ValidationError
 
 class UserRegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = ()  # Esto permite acceso sin autenticación
+    permission_classes = []
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        print("Datos recibidos:", request.data)
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except ValidationError as e:
+            print("Errores de serialización:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         user = serializer.save()
-        # Send verification email here if needed
+        self.send_verification_email(user)
+        return Response({"message": "Registration successful. Please check your email to verify your account."}, status=status.HTTP_201_CREATED)
 
-class VerifyEmailView(views.APIView):
-    # Implement email verification logic here
-    pass
+    def send_verification_email(self, user):
+        subject = "Verify your email"
+        message = "Thank you for registering. Please verify your email."
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [user.email]
+        send_mail(subject, message, email_from, recipient_list)
 
 class LoginView(views.APIView):
-    permission_classes = ()  # Esto permite acceso sin autenticación
-
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'message': 'Login successful', 'token': token.key}, status=status.HTTP_200_OK)
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
