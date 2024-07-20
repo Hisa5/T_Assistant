@@ -1,6 +1,9 @@
+# chatbot/models.py
+
 from django.db import models
 from django.contrib.auth import get_user_model
 import uuid
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -23,3 +26,8 @@ class Thread(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_activity = models.DateTimeField(auto_now=True)
+    thread_id = models.CharField(max_length=255, default=uuid.uuid4)  # Agregar un valor predeterminado
+
+    def update_last_activity(self):
+        self.last_activity = timezone.now()
+        self.save()

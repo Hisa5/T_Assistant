@@ -14,7 +14,7 @@ from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import logging
-
+from chatbot.thread_manager import thread_manager 
 logger = logging.getLogger(__name__)
 
 class UserRegisterView(generics.CreateAPIView):
@@ -55,6 +55,7 @@ class LoginView(views.APIView):
             if user.email_verified:
                 login(request, user)
                 token, created = Token.objects.get_or_create(user=user)
+                thread_manager.create_thread(user) 
                 logger.debug(f"Login successful for username: {username}")
                 return Response({'message': 'Login successful', 'token': token.key}, status=status.HTTP_200_OK)
             else:
