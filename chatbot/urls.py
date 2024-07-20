@@ -1,8 +1,6 @@
-# chatbot/urls.py
 from django.urls import path
-from .views import EntryLLMView  # Solo importa EntryLLMView si TechnicalQueryView no existe
+from .views import ChatbotEntryView
 
 urlpatterns = [
-    path('entry-llm/', EntryLLMView.as_view(), name='entry_llm'),
-    # Si tienes otras vistas, agrégalas aquí
+    path('entry-llm/', ChatbotEntryView.as_view(), name='entry-llm'),
 ]
