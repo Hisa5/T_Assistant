@@ -65,7 +65,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'T_Assistant.urls'
-
+# Añadir esta configuración para excluir las rutas de la API de la protección CSRF
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -147,10 +148,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
+
+# CORS_ALLOW_ALL_ORIGINS = True  # Permitir todos los orígenes (para desarrollo)
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
@@ -174,17 +176,15 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
+        'console': {
+            'level': 'ERROR',  # Cambia a 'CRITICAL' si quieres aún menos logs
+            'class': 'logging.StreamHandler',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
+            'handlers': ['console'],
+            'level': 'ERROR',  # Cambia a 'CRITICAL' si quieres aún menos logs
         },
     },
 }
